@@ -1,8 +1,33 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+enum Role {
+  VIEWER
+  USER
+  ADMIN
+}
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+enum OrganizationType {
+  COMPANY
+  STARTUP
+  SME
+  SOLE_PROPRIETORSHIP
+  COOPERATIVE
+
+  GOVERNMENT_AGENCY
+  STATE_OWNED
+
+  NON_PROFIT
+  FOUNDATION
+  ASSOCIATION
+  EDUCATIONAL
+  RELIGIOUS
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELED
+  PENDING
+  INACTIVE
+}
 
 generator client {
   provider = "prisma-client-js"
@@ -12,4 +37,60 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  createdAt     DateTime       @default(now())
+  email         String         @unique
+  name          String
+  role          Role           @default(USER)
+  Organizations Organization[]
+
+  Member Member[]
+}
+
+model Organization {
+  id               String  @id @default(uuid(7))
+  name             String
+  owner            User    @relation(fields: [userId], references: [id])
+  userId           Int
+  organizationType String
+  address          String
+  email            String?
+  phone            String?
+
+  Member       Member[]
+  Subscription Subscription[]
+}
+
+model Member {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  organizationId String
+  role           String?
+  joinedAt       DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Plan {
+  id            Int            @id @default(autoincrement())
+  name          String
+  price         Decimal
+  durationDays  Int
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id             Int                @id @default(autoincrement())
+  organizationId String
+  planId         Int
+  startDate      DateTime           @default(now())
+  endDate        DateTime
+  status         SubscriptionStatus @default(INACTIVE)
+
+  plan         Plan         @relation(fields: [planId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
 }
