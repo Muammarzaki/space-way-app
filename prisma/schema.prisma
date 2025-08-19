@@ -144,7 +144,29 @@ model Floor {
 }
 
 model Building {
-  id     Int     @id
-  name   String
+  id      Int     @id
+  Project Project @relation(fields: [id], references: [id])
+
   floors Floor[]
+}
+
+model AreaField {
+  id      Int     @id
+  Project Project @relation(fields: [id], references: [id])
+}
+
+enum ProjectType {
+  BUILDING
+  AREAFIELD
+}
+
+model Project {
+  id   Int         @id
+  name String
+  type ProjectType
+
+  buildingId  Int?
+  areaFieldId Int?
+  Building    Building?
+  AreaField   AreaField?
 }
