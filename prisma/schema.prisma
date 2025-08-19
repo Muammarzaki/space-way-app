@@ -1,3 +1,15 @@
+// DATABASE CONFIG
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// USER MODEL
 enum Role {
   VIEWER
   USER
@@ -27,16 +39,6 @@ enum SubscriptionStatus {
   CANCELED
   PENDING
   INACTIVE
-}
-
-generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -93,4 +95,56 @@ model Subscription {
 
   plan         Plan         @relation(fields: [planId], references: [id])
   organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+// DATA STORE MODEL
+model SVGFile {
+  name   String  @id
+  sizeKb Int
+  alt    String?
+  ratio  Float
+
+  Map Map[]
+}
+
+model Map {
+  id     Int     @id
+  vector SVGFile @relation(fields: [sVGFileName], references: [name])
+
+  sVGFileName String @unique
+  Floor       Floor?
+}
+
+model Point {
+  id     Int   @id
+  pointX Float
+  pointY Float
+  Room   Room?
+}
+
+model Room {
+  id      Int    @id
+  name    String
+  Floor   Floor? @relation(fields: [floorId], references: [id])
+  floorId Int?
+  point   Point  @relation(fields: [pointId], references: [id])
+  pointId Int    @unique
+}
+
+model Floor {
+  id    Int    @id
+  name  String
+  level Int
+  map   Map    @relation(fields: [mapId], references: [id])
+  mapId Int    @unique
+  rooms Room[]
+
+  Building   Building @relation(fields: [Buildingid], references: [id])
+  Buildingid Int
+}
+
+model Building {
+  id     Int     @id
+  name   String
+  floors Floor[]
 }
