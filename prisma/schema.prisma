@@ -1,7 +1,6 @@
 // DATABASE CONFIG
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -64,6 +63,7 @@ model Organization {
 
   Member       Member[]
   Subscription Subscription[]
+  Project      Project[]
 }
 
 model Member {
@@ -169,4 +169,7 @@ model Project {
   areaFieldId Int?
   Building    Building?
   AreaField   AreaField?
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
 }
