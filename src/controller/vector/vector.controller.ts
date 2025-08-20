@@ -18,7 +18,7 @@ import { VData } from './vector.type';
 export class VectorController {
   constructor(private readonly service: VectorService) {}
 
-  @Post('upload')
+  @Post()
   @UseInterceptors(
     FileInterceptor('vector', { storage: vectorStorage('vector') }),
   )
@@ -30,7 +30,7 @@ export class VectorController {
     await this.service.saveVector(file, body);
   }
 
-  @Patch('upload')
+  @Patch()
   async updateSVGFile(@Body() body: VData) {
     await this.service.updateVector(body);
   }
@@ -40,7 +40,7 @@ export class VectorController {
     await this.service.deleteVector(id);
   }
 
-  @Get(':id')
+  @Get(':id/find')
   async getSVGFile(@Param('id') id: string) {
     return this.service.getVector(id);
   }
