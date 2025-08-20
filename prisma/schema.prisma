@@ -111,22 +111,23 @@ model SVGFile {
 }
 
 model Map {
-  id     Int     @id
+  id     Int     @id @default(autoincrement())
   vector SVGFile @relation(fields: [sVGFileName], references: [name])
 
-  sVGFileName String @unique
+  sVGFileName String     @unique
   Floor       Floor?
+  AreaField   AreaField?
 }
 
 model Point {
-  id     Int   @id
+  id     Int   @id @default(autoincrement())
   pointX Float
   pointY Float
   Room   Room?
 }
 
 model Room {
-  id      Int    @id
+  id      Int    @id @default(autoincrement())
   name    String
   Floor   Floor? @relation(fields: [floorId], references: [id])
   floorId Int?
@@ -135,7 +136,7 @@ model Room {
 }
 
 model Floor {
-  id    Int    @id
+  id    Int    @id @default(autoincrement())
   name  String
   level Int
   map   Map    @relation(fields: [mapId], references: [id])
@@ -147,32 +148,41 @@ model Floor {
 }
 
 model Building {
-  id      Int     @id
-  Project Project @relation(fields: [id], references: [id])
+  id   Int  @unique
+  site Site @relation(fields: [id], references: [id])
 
   floors Floor[]
 }
 
 model AreaField {
-  id      Int     @id
-  Project Project @relation(fields: [id], references: [id])
+  id   Int  @unique
+  site Site @relation(fields: [id], references: [id])
+
+  map   Map @relation(fields: [mapId], references: [id])
+  mapId Int @unique
 }
 
-enum ProjectType {
+model Site {
+  id   Int      @id @default(autoincrement())
+  name String
+  type SiteType
+
+  building  Building?
+  areaField AreaField?
+  Project   Project?   @relation(fields: [projectId], references: [id])
+  projectId String?
+}
+
+enum SiteType {
   BUILDING
   AREAFIELD
 }
 
 model Project {
-  id   Int         @id
+  id   String @id @default(uuid(7))
   name String
-  type ProjectType
 
-  buildingId  Int?
-  areaFieldId Int?
-  Building    Building?
-  AreaField   AreaField?
-
+  sites          Site[]
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String
 }
