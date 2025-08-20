@@ -99,12 +99,15 @@ model Subscription {
 
 // DATA STORE MODEL
 model SVGFile {
-  name   String  @id
-  sizeKb Int
-  alt    String?
-  ratio  Float
+  name        String  @id
+  displayName String
+  sizeKb      Int
+  alt         String?
+  ratio       Float
+  path        String
+  mimetype    String
 
-  Map Map[]
+  Map Map?
 }
 
 model Map {
