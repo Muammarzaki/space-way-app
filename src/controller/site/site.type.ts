@@ -21,7 +21,6 @@ export class Floor {
   level: number;
   mapId: string;
   siteId: string;
-  room?: Room[];
 }
 
 export class SData {
@@ -30,12 +29,4 @@ export class SData {
   type: SType;
   projectId: string;
   mapId: string;
-}
-
-export class SBuilding extends SData {
-  floor: Floor[];
-}
-
-export class SAreaField extends SData {
-  room: Room[];
 }
