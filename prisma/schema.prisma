@@ -99,7 +99,7 @@ model Subscription {
 
 // DATA STORE MODEL
 model SVGFile {
-  name        String  @id
+  id String @id
   displayName String
   sizeKb      Int
   alt         String?
@@ -111,66 +111,53 @@ model SVGFile {
 }
 
 model Map {
-  id     Int     @id @default(autoincrement())
-  vector SVGFile @relation(fields: [sVGFileName], references: [name])
+  id   String @id
+  name String
 
-  sVGFileName String     @unique
-  Floor       Floor?
-  AreaField   AreaField?
+  vector    SVGFile @relation(fields: [sVGFileId], references: [id])
+  sVGFileId String  @unique
+  Floor     Floor?
+  Site      Site?
 }
 
 model Point {
   id     Int   @id @default(autoincrement())
   pointX Float
   pointY Float
-  Room   Room?
+  Room   Room @relation(fields: [roomId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  roomId Int  @unique
 }
 
 model Room {
-  id      Int    @id @default(autoincrement())
-  name    String
+  id    Int    @id @default(autoincrement())
+  name  String
+  point Point?
+
   Floor   Floor? @relation(fields: [floorId], references: [id])
   floorId Int?
-  point   Point  @relation(fields: [pointId], references: [id])
-  pointId Int    @unique
 }
 
 model Floor {
-  id    Int    @id @default(autoincrement())
-  name  String
-  level Int
-  map   Map    @relation(fields: [mapId], references: [id])
-  mapId Int    @unique
-  rooms Room[]
-
-  Building   Building @relation(fields: [Buildingid], references: [id])
-  Buildingid Int
-}
-
-model Building {
-  id   Int  @unique
-  site Site @relation(fields: [id], references: [id])
-
-  floors Floor[]
-}
-
-model AreaField {
-  id   Int  @unique
-  site Site @relation(fields: [id], references: [id])
-
-  map   Map @relation(fields: [mapId], references: [id])
-  mapId Int @unique
+  id     Int     @id @default(autoincrement())
+  name   String
+  level  Int
+  map    Map?    @relation(fields: [mapId], references: [id])
+  mapId  String? @unique
+  rooms  Room[]
+  Site   Site?   @relation(fields: [siteId], references: [id])
+  siteId String?
 }
 
 model Site {
-  id   Int      @id @default(autoincrement())
+  id String @id @default(uuid(7))
   name String
   type SiteType
 
-  building  Building?
-  areaField AreaField?
-  Project   Project?   @relation(fields: [projectId], references: [id])
+  map     Map?     @relation(fields: [mapId], references: [id])
+  mapId   String?  @unique
+  Project Project? @relation(fields: [projectId], references: [id])
   projectId String?
+  floors  Floor[]
 }
 
 enum SiteType {

@@ -9,14 +9,14 @@ export class ProjectService {
   async createProject(project: PData) {
     await this.prisma.project.create({
       data: {
+        id: project.id,
         organizationId: project.organizationId,
         name: project.name,
-        type: project.type,
       },
     });
   }
 
-  async updateProject(project: PData) {
+  async updateProjectName(project: PData) {
     await this.prisma.project.update({
       where: {
         id: project.id,

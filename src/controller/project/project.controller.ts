@@ -13,7 +13,7 @@ export class ProjectController {
 
   @Patch()
   async updateProject(@Body() body: PData) {
-    await this.service.updateProject(body);
+    await this.service.updateProjectName(body);
   }
 
   @Delete(':id/bye')

@@ -9,7 +9,7 @@ export class VectorService {
   async saveVector(file: VFile, data: VData) {
     await this.prisma.sVGFile.create({
       data: {
-        name: file.filename,
+        id: file.filename,
         alt: data.alt ?? '',
         sizeKb: file.size,
         ratio: data.ratio ?? 1,
@@ -23,7 +23,7 @@ export class VectorService {
   async updateVector(data: VData) {
     await this.prisma.sVGFile.update({
       where: {
-        name: data.id,
+        id: data.id,
       },
       data: {
         alt: data.alt,
@@ -36,7 +36,7 @@ export class VectorService {
   async deleteVector(id: string) {
     await this.prisma.sVGFile.delete({
       where: {
-        name: id,
+        id: id,
       },
     });
   }
@@ -44,7 +44,7 @@ export class VectorService {
   async getVector(id: string) {
     return this.prisma.sVGFile.findUnique({
       where: {
-        name: id,
+        id: id,
       },
     });
   }
