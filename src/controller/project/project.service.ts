@@ -46,4 +46,18 @@ export class ProjectService {
       },
     });
   }
+
+  async checkSiteInProject(
+    projectId: string,
+    siteId: string,
+  ): Promise<boolean> {
+    const exists = await this.prisma.site.count({
+      where: {
+        id: siteId,
+        projectId: projectId,
+      },
+    });
+
+    return exists > 0;
+  }
 }

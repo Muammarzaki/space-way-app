@@ -6,10 +6,13 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { MData } from './map.type';
 import { MapService } from './map.service';
+import { ProjectGuard } from '../project/project.guard';
 
+@UseGuards(ProjectGuard)
 @Controller('map')
 export class MapController {
   constructor(private readonly service: MapService) {}

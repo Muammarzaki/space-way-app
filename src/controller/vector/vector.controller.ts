@@ -7,13 +7,16 @@ import {
   Patch,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SVGValidationPipe, vectorStorage } from './vector.pipe';
 import { VectorService } from './vector.service';
 import { VData } from './vector.type';
+import { ProjectGuard } from '../project/project.guard';
 
+@UseGuards(ProjectGuard)
 @Controller('vector')
 export class VectorController {
   constructor(private readonly service: VectorService) {}
