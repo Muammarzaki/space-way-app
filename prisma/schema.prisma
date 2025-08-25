@@ -9,10 +9,11 @@ datasource db {
 }
 
 // USER MODEL
-enum Role {
+enum MemberRole {
   VIEWER
   USER
   ADMIN
+  SUPER_ADMIN
 }
 
 enum OrganizationType {
@@ -41,12 +42,10 @@ enum SubscriptionStatus {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
-  createdAt     DateTime       @default(now())
-  email         String         @unique
-  name          String
-  role          Role           @default(USER)
-  Organizations Organization[]
+  email              String        @id
+  createdAt          DateTime      @default(now())
+  name               String        @unique
+  OrganizationsOwned Organization[]
 
   Members Member[]
 }
@@ -54,27 +53,27 @@ model User {
 model Organization {
   id               String  @id @default(uuid(7))
   name             String
-  owner            User    @relation(fields: [userId], references: [id])
-  userId           Int
   organizationType String
   address          String
   email            String?
   phone            String?
 
-  Members  Member[]
-  Subscription Subscription[]
-  Projects Project[]
+  owner        User          @relation(fields: [ownerId], references: [email], onUpdate: Cascade)
+  ownerId      String
+  Members      Member[]
+  Subscription Subscription?
+  Projects     Project[]
 }
 
 model Member {
-  id             Int      @id @default(autoincrement())
-  userId         Int
+  id       Int        @id @default(autoincrement())
   organizationId String
-  role           String?
-  joinedAt       DateTime @default(now())
+  Role     MemberRole @default(USER)
+  joinedAt DateTime   @default(now())
 
-  User          User         @relation(fields: [userId], references: [id])
-  Organizations Organization @relation(fields: [organizationId], references: [id])
+  User          User          @relation(fields: [userId], references: [email])
+  userId        String
+  Organizations Organization[]
 }
 
 model Plan {
@@ -86,15 +85,15 @@ model Plan {
 }
 
 model Subscription {
-  id             Int                @id @default(autoincrement())
-  organizationId String
-  planId         Int
-  startDate      DateTime           @default(now())
-  endDate        DateTime
-  status         SubscriptionStatus @default(INACTIVE)
+  id        Int                @id @default(autoincrement())
+  planId    Int
+  startDate DateTime           @default(now())
+  endDate   DateTime
+  status    SubscriptionStatus @default(INACTIVE)
 
-  Plan         Plan         @relation(fields: [planId], references: [id])
-  Organization Organization @relation(fields: [organizationId], references: [id])
+  Plan           Plan         @relation(fields: [planId], references: [id])
+  Organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String       @unique
 }
 
 // DATA STORE MODEL
