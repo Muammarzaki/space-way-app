@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../data/prisma.service';
-import { OrgData, Plan } from './organization.type';
+import { OrgData, OrgMember, Plan } from './organization.type';
 
 @Injectable()
 export class OrganizationService {
@@ -50,6 +50,53 @@ export class OrganizationService {
     return this.prisma.organization.findUnique({
       where: {
         id: org,
+      },
+    });
+  }
+
+  createMember(member: OrgMember) {
+    return this.prisma.member.create({
+      data: {
+        id: member.id,
+        organizationId: member.organizationId,
+        userId: member.userId,
+        role: member.role,
+      },
+    });
+  }
+
+  async updateMemberRole(memberId: number, newRole: string) {
+    return this.prisma.member.update({
+      where: {
+        id: memberId,
+      },
+      data: {
+        role: newRole,
+      },
+    });
+  }
+
+  getMembers(orgId: string) {
+    return this.prisma.member.findMany({
+      where: {
+        organizationId: orgId,
+      },
+    });
+  }
+
+  async getMember(memberId: number, orgId: string) {
+    return this.prisma.member.findUnique({
+      where: {
+        id: memberId,
+        organizationId: orgId,
+      },
+    });
+  }
+
+  async deleteMember(memberId: number) {
+    return this.prisma.member.delete({
+      where: {
+        id: memberId,
       },
     });
   }
@@ -112,15 +159,21 @@ export class OrganizationService {
     });
   }
 
-  async updateSubscription(id: number, planId: number) {
-    const plan = await this.getPlan(planId);
+  async updateSubscription(orgId: string) {
+    const subscription = await this.getSubscriptionByOrganizationId(orgId);
+
+    if (!subscription) {
+      throw new Error('Subscription not found');
+    }
+
+    const plan = await this.getPlan(subscription.planId);
     if (!plan) {
       throw new Error('Plan not found');
     }
 
     await this.prisma.subscription.update({
       where: {
-        id: id,
+        id: subscription.id,
       },
       data: {
         endDate: new Date(Date.now() + plan.durationDays),
@@ -144,10 +197,10 @@ export class OrganizationService {
     });
   }
 
-  getSubscription(id: number) {
+  getSubscriptionByOrganizationId(orgId: string) {
     return this.prisma.subscription.findUnique({
       where: {
-        id: id,
+        organizationId: orgId,
       },
     });
   }

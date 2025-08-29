@@ -9,13 +9,6 @@ datasource db {
 }
 
 // USER MODEL
-enum MemberRole {
-  VIEWER
-  USER
-  ADMIN
-  SUPER_ADMIN
-}
-
 enum OrganizationType {
   COMPANY
   STARTUP
@@ -42,9 +35,9 @@ enum SubscriptionStatus {
 }
 
 model User {
-  email              String        @id
-  createdAt          DateTime      @default(now())
-  name               String        @unique
+  email     String   @id
+  createdAt DateTime @default(now())
+  name      String   @unique
   OrganizationsOwned Organization[]
 
   Members Member[]
@@ -66,12 +59,12 @@ model Organization {
 }
 
 model Member {
-  id       Int        @id @default(autoincrement())
+  id       Int      @id @default(autoincrement())
   organizationId String
-  Role     MemberRole @default(USER)
-  joinedAt DateTime   @default(now())
+  role     String
+  joinedAt DateTime @default(now())
 
-  User          User          @relation(fields: [userId], references: [email])
+  User User @relation(fields: [userId], references: [email])
   userId        String
   Organizations Organization[]
 }

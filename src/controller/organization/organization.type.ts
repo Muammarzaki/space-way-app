@@ -1,7 +1,6 @@
-import { MemberRole, OrganizationType } from '@prisma/client';
+import { OrganizationType } from '@prisma/client';
 
 export type OrgType = OrganizationType;
-export type OrgMemberType = MemberRole;
 
 export class OrgData {
   id: string;
@@ -14,7 +13,7 @@ export class OrgData {
 }
 
 export class OrgMember {
-  id: string;
+  id: number;
   organizationId: string;
   role: string;
   userId: string;
@@ -22,9 +21,9 @@ export class OrgMember {
 }
 
 export class Subscription {
-  id: string;
+  id: number;
   organizationId: string;
-  planId: string;
+  planId: number;
   startAt: Date;
   endAt: Date;
   status: string;
